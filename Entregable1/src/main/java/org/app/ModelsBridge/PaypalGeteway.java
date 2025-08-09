@@ -2,12 +2,14 @@ package org.app.ModelsBridge;
 
 public class PaypalGeteway implements PaymentGateway{
     @Override
-    public void authorize(double amount) {
-        System.out.println("Autrorizadno el pago de $" + amount + " con PayPal");
+    public boolean authorize(double amount) {
+        System.out.println("Autrorizando...");
+        return amount <= 100000 && amount > 0;
     }
 
     @Override
-    public void capture(double amount) {
-        System.out.println("Capturando el monto de $" + amount + " con PayPAl");
+    public boolean capture(double amount) {
+        System.out.println("Capturando el monto de $" + amount + " con PayPAl...");
+        return true;
     }
 }

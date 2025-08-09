@@ -6,6 +6,6 @@ public abstract class PaymentProcessor{
     public PaymentProcessor(PaymentGateway paymentGateway) {
         this.paymentGateway = paymentGateway;
     }
-    public abstract void processPayment(double amount);
-    public abstract void refundPayment(double amount);
+    public abstract boolean processPayment(double amount);
+    public abstract boolean refundPayment(double amount);
 }

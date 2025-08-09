@@ -40,31 +40,43 @@ public class Main {
         CompletableFuture<Double> priceFuture = calculator.calculateCostAsync();
 
         priceFuture.thenAccept(price -> {
-            System.out.println("Precio total del envio: $" + price);
+            if (price > 0) {
+                System.out.println("Precio total del envio: $" + price);
 
-            System.out.println("Realizar el pago (1. Si - 2. No):");
-            int optionPay = Integer.parseInt(scanner.nextLine());
+                System.out.println("Realizar el pago (1. Si - 2. No):");
+                int optionPay = Integer.parseInt(scanner.nextLine());
 
-            switch (optionPay) {
-                case 1:
-                    System.out.println("Seleccione el proveedor del pago:");
-                    System.out.println("1. PayPal");
-                    System.out.println("2. MercadoPago");
-                    int paymentProcessor = Integer.parseInt(scanner.nextLine());
+                switch (optionPay) {
+                    case 1:
+                        System.out.println("Seleccione el proveedor del pago:");
+                        System.out.println("1. PayPal");
+                        System.out.println("2. MercadoPago");
+                        int paymentProcessor = Integer.parseInt(scanner.nextLine());
 
-                    PaymentManager paymentManager = new PaymentManager();
-                    CompletableFuture<Void> paymentFuture = paymentManager.processPaymentAsync(price, paymentProcessor);
+                        PaymentManager paymentManager = new PaymentManager();
 
-                    paymentFuture.thenRun(() -> {
-                        System.out.println("Deshacer el pago (1. Si - 2. No):");
-                        int optionRefund = Integer.parseInt(scanner.nextLine());
-                        if (optionRefund == 1) {
-                            paymentManager.refundPaymentAsync(price, paymentProcessor);
-                        }
-                    }).join();
-                    break;
-                default:
-                    break;
+                        paymentManager.processPaymentAsync(price, paymentProcessor)
+                                .thenAccept(success -> {
+                                    if (success) {
+                                        System.out.println("Pago realizado.");
+                                        System.out.println("Deshacer el pago (1. Si - 2. No):");
+                                        int optionRefund = Integer.parseInt(scanner.nextLine());
+                                        if (optionRefund == 1) {
+                                            paymentManager.refundPaymentAsync(price, paymentProcessor)
+                                                    .thenAccept(refunded -> {
+                                                        if (refunded) {
+                                                            System.out.println("Pago reembolsado.");
+                                                        }
+                                                    }).join();
+                                        }
+                                    }
+                                }).join();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                System.out.println("El peso o la dimension fue mal ingresada.");
             }
         }).join();
 

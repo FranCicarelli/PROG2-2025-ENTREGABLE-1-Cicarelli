@@ -6,14 +6,17 @@ public class PaypalPaymentProcessor extends PaymentProcessor{
     }
 
     @Override
-    public void processPayment(double amount) {
-        System.out.println("Procesando el pago.");
-        paymentGateway.authorize(amount);
-        paymentGateway.capture(amount);
+    public boolean processPayment(double amount) {
+        System.out.println("Procesando el pago...");
+        if (!paymentGateway.authorize(amount)) {
+            return false;
+        }
+        return paymentGateway.capture(amount);
     }
 
     @Override
-    public void refundPayment(double amount) {
+    public boolean refundPayment(double amount) {
         System.out.println("Reembolsando el monto de: $" + amount);
+        return amount > 0;
     }
 }
